@@ -1,8 +1,9 @@
-import { createHttpServer } from './server/main';
+import { HttpServerSingleton } from './server/index';
 
 import { createConnection } from 'net';
 
-const testServer = createHttpServer();
+const instance = HttpServerSingleton.getInstance();
+const testServer = instance.getServer();
 testServer.listen(8080, 'localhost');
 
 // Test the running server

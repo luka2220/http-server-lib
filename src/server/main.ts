@@ -7,22 +7,27 @@
 
 import { Server, Socket } from 'net';
 
-let serverInstance: Server | null = null;
+export class HttpServerSingleton {
+  private static instance: HttpServerSingleton | null;
+  private server: Server;
 
-export function createHttpServer(): Server {
-  serverInstance = new Server((socket: Socket) => {
-    const addr = socket.remoteAddress ?? '__';
+  private constructor() {
+    this.server = new Server((socket: Socket) => {
+      const adder = socket.remoteAddress ?? '__';
 
-    console.log(`Incoming TCP connection from socket addr => ${addr}`);
-  });
-
-  return serverInstance;
-}
-
-export function getServerInstance(): Server {
-  if (!serverInstance) {
-    return createHttpServer();
+      console.log(`Incoming TCP connection from socket adder => ${adder}`);
+    });
   }
 
-  return serverInstance;
+  public getServer(): Server {
+    return this.server;
+  }
+
+  static getInstance(): HttpServerSingleton {
+    if (!this.instance) {
+      this.instance = new HttpServerSingleton();
+    }
+
+    return this.instance;
+  }
 }

@@ -1,10 +1,9 @@
-import { getServerInstance } from './main';
+import { HttpServerSingleton } from './main';
 
-import { Socket } from 'net';
+import { Socket, Server } from 'net';
 
-const httpServer = getServerInstance();
+const httpServer = HttpServerSingleton.getInstance().getServer();
 
-/*-----Server Handlers-----*/
 httpServer.on('connection', parseDataFromClient);
 
 /*-----Data Handlers-----*/
