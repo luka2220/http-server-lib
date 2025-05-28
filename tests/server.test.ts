@@ -1,2 +1,4 @@
 import { expect, test } from 'vitest';
-import { createHttpServer, getServerInstance } from '../src/server/main';
+import { HttpServerSingleton } from '../src/server/index';
+
+import { createConnection } from 'net';
