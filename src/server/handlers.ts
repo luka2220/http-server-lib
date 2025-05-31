@@ -1,9 +1,4 @@
-import {
-  accessSync,
-  createReadStream,
-  createWriteStream,
-  WriteStream,
-} from 'fs';
+import { accessSync, createReadStream, ReadStream } from 'fs';
 import { HttpServerSingleton } from './main';
 
 import { Socket } from 'net';
@@ -13,34 +8,53 @@ const httpServer = HttpServerSingleton.getInstance().getServer();
 
 httpServer.on('connection', readBuffer);
 
-let sockInstance: Socket | null = null;
-
-async function readBuffer(socket: Socket) {
-  sockInstance = socket;
-
-  socket.setEncoding('ascii');
-  socket.on('data', parseHttpRequest);
+interface ResponseData {
+  isValid: boolean;
+  stream?: ReadStream;
 }
 
-function parseHttpRequest(buffer: string) {
-  if (!sockInstance) {
-    console.error('No socket instance');
-    return;
-  }
+async function readBuffer(socket: Socket) {
+  try {
+    socket.setEncoding('ascii');
+    socket.on('data', (buffer: string) => {
+      const { isValid, stream } = parseHttpRequest(buffer);
 
+      if (isValid && stream) {
+        stream.pipe(socket);
+      }
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      const err = {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+      };
+      console.error(
+        `An error occured when handling the socket...\n${JSON.stringify(err)}`,
+      );
+    }
+  }
+}
+
+function parseHttpRequest(buffer: string): ResponseData {
   const request = buffer.slice(0, buffer.length - 2).split(' ');
   const [method, resource] = request;
 
   const { isValid, path } = validateResquest(method, resource);
 
   if (!isValid) {
-    sockInstance.write('ERROR\n');
-    sockInstance.end('Closing connection to test client');
-    return;
+    return {
+      isValid: false,
+    };
   }
 
   const file = createReadStream(path);
-  file.pipe(sockInstance);
+
+  return {
+    isValid: true,
+    stream: file,
+  };
 }
 
 interface ClientRequest {

@@ -16,10 +16,5 @@ async function connectAndSendData() {
 
   client.on('data', (data: string) => {
     console.log(`Server response -> \n\n${data}`);
-    client.end();
-  });
-
-  client.on('end', () => {
-    console.log('Disconnected from server');
   });
 }

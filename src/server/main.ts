@@ -1,10 +1,3 @@
-/* TODOs 
-- Create a TCP server
-- Accept incomming client connections (establish the connection to the client)
-- Handle the request for each client connection
-- Provide a response to the client connection
-*/
-
 import { Server, Socket } from 'net';
 
 export class HttpServerSingleton {
