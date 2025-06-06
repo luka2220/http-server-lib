@@ -3,6 +3,7 @@ import { HttpServerSingleton } from './main';
 
 import { Socket } from 'net';
 import { join } from 'path';
+import { pipeline } from 'stream';
 
 const httpServer = HttpServerSingleton.getInstance().getServer();
 
@@ -20,7 +21,11 @@ async function readBuffer(socket: Socket) {
       const { isValid, stream } = parseHttpRequest(buffer);
 
       if (isValid && stream) {
-        stream.pipe(socket);
+        pipeline(stream, socket, (err) => {
+          if (err) {
+            console.log(err);
+          }
+        });
       }
     });
   } catch (error) {
