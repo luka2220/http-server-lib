@@ -1,3 +1,3 @@
-### HTTP Server Library
+### HTTP Server
 
-A basic http library for node with simple usage
+A very basic implementation of an HTTP server in Node for fun!
